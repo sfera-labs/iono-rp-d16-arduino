@@ -41,7 +41,7 @@ You can inport the library in your sketch with:
 
 Check out the [examples](./examples) for a quick start.
 
-Here some more details:
+Here some more details on the available functions:
 
 ### `Iono.setup()`
 Call this function in your `setup()`, before using any other functionality of the library. It initializes the used pins and peripherals.
