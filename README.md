@@ -1,4 +1,4 @@
-# Exo Sense RP - Arduino IDE libraries and examples
+# Iono RP D16 - Arduino IDE libraries and examples
 
 Arduino IDE libraries and examples for [Iono RP D16](https://www.sferalabs.cc/product/iono-rp-d16/) - the multi-purpose digital I/O module with a Raspberry Pi RP2040 (Pico) computing core.
 
