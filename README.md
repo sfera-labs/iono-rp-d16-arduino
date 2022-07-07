@@ -53,6 +53,7 @@ Example:
 ```
 void loop1() {
     Iono.process();
+    delay(10);
 }
 
 void loop() {
