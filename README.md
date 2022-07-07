@@ -47,7 +47,7 @@ Here some more details on the available functions:
 Call this function in your `setup()`, before using any other functionality of the library. It initializes the used pins and peripherals.
 
 ### `Iono.process()`
-Call this function periodically, with a maximum interval of 500ms. It performs the reading/writing of the input/output peripherals' state, moreover it checks for error conditions and updates the watchdog. It is recommended to reserve one core of the RP2040 for calling this function, while performing your custom logic on the other core.
+Call this function periodically, with a maximum interval of 100ms. It performs the reading of the input/output peripherals' state, moreover it checks for error conditions, enables safety routines and updates the outputs' watchdog. It is recommended to reserve one core of the RP2040 for calling this function, while performing your custom logic on the other core.
 
 Example:
 ```
