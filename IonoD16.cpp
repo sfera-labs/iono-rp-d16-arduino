@@ -629,7 +629,7 @@ int IonoD16Class::overVoltageLockRead(int pin) {
   return _getBit(m->ovLock, outIdx) ? HIGH : LOW;
 }
 
-int IonoD16Class::thsdRead(int pin) {
+int IonoD16Class::thermalShutdownRead(int pin) {
   struct max14912Str* m;
   int outIdx;
   if (!_max14912GetByPin(pin, &m, &outIdx)) {
@@ -638,7 +638,7 @@ int IonoD16Class::thsdRead(int pin) {
   return _getBit(m->thsd, outIdx) ? HIGH : LOW;
 }
 
-int IonoD16Class::thsdLockRead(int pin) {
+int IonoD16Class::thermalShutdownLockRead(int pin) {
   struct max14912Str* m;
   int outIdx;
   if (!_max14912GetByPin(pin, &m, &outIdx)) {

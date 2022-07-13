@@ -88,8 +88,8 @@ class IonoD16Class {
     int openLoadRead(int);
     int overVoltageRead(int);
     int overVoltageLockRead(int);
-    int thsdRead(int);
-    int thsdLockRead(int);
+    int thermalShutdownRead(int);
+    int thermalShutdownLockRead(int);
     bool pinMode(int, int, bool wbol=false);
     bool outputsJoin(int, bool join=true);
     bool outputsClearFaults(int);

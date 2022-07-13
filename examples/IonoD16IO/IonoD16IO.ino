@@ -38,7 +38,7 @@ void setup() {
 
   delay(500);
 
-  // Setup D1 as push/pull output
+  // Setup D1 as push-pull output
   if (!Iono.pinMode(D1, OUTPUT_PP)) {
     Serial.println("D1 setup error");
   }
@@ -117,10 +117,10 @@ void loop() {
     Serial.print(Iono.overVoltageRead(d));
     Serial.print("\tOVL = ");
     Serial.print(Iono.overVoltageLockRead(d));
-    Serial.print("\tTH = ");
-    Serial.print(Iono.thsdRead(d));
-    Serial.print("\tTHL = ");
-    Serial.print(Iono.thsdLockRead(d));
+    Serial.print("\tTS = ");
+    Serial.print(Iono.thermalShutdownRead(d));
+    Serial.print("\tTSL = ");
+    Serial.print(Iono.thermalShutdownLockRead(d));
     Serial.println();
   }
 
