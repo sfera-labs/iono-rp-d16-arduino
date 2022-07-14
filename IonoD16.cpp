@@ -433,8 +433,8 @@ bool IonoD16Class::setup() {
   ::digitalWrite(IONO_PIN_CS_DIL, HIGH);
   ::digitalWrite(IONO_PIN_CS_DIH, HIGH);
 
-  ::pinMode(IONO_PIN_WD_EN, OUTPUT);
-  ::digitalWrite(IONO_PIN_WD_EN, HIGH);
+  ::pinMode(IONO_PIN_MAX14912_WD_EN, OUTPUT);
+  ::digitalWrite(IONO_PIN_MAX14912_WD_EN, HIGH);
 
   ::pinMode(IONO_PIN_RS485_TXEN_N, OUTPUT);
   rs485TxEn(false);

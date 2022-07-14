@@ -40,7 +40,9 @@
 #define IONO_PIN_CS_DIL 8
 #define IONO_PIN_CS_DIH 7
 
-#define IONO_PIN_WD_EN 18
+#define IONO_PIN_MAX14912_WD_EN 18
+
+#define IONO_PIN_MAX22190_LATCH 9
 
 #define SERIAL_PORT_MONITOR Serial
 #define SERIAL_PORT_HARDWARE Serial1
