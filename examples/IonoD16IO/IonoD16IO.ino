@@ -134,10 +134,6 @@ void loop() {
   Serial.println(Iono.read(DT1));
   Serial.print("DT2 = ");
   Serial.println(Iono.read(DT2));
-
-  // Clear open-load and thermal-shutdown
-  // flags on all outputs in the range D1 - D8
-  Iono.outputsClearFaults(D1);
 }
 
 void onDebounce(int pin, int val) {

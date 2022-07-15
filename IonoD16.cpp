@@ -517,6 +517,7 @@ void IonoD16Class::process() {
   for (i = 0; i < _MAX22190_NUM; i++) {
     mi = &_max22190[i];
     _max22190ReadReg(MAX22190_REG_WB, mi, &mi->wb);
+    mi->faultMemWb |= mi->wb;
   }
   for (i = 0; i < _MAX22190_NUM; i++) {
     mi = &_max22190[i];
@@ -530,15 +531,18 @@ void IonoD16Class::process() {
   for (i = 0; i < _MAX14912_NUM; i++) {
     mo = &_max14912[i];
     _max14912ReadReg(MAX14912_REG_OL, mo, &mo->olRT, &mo->ol);
+    mo->faultMemOl |= mo->olRT;
   }
   for (i = 0; i < _MAX14912_NUM; i++) {
     mo = &_max14912[i];
     _max14912ReadReg(MAX14912_REG_OV, mo, &mo->ovRT, NULL);
+    mo->faultMemOv |= mo->ovRT;
     _max14912OverVoltProt(mo);
   }
   for (i = 0; i < _MAX14912_NUM; i++) {
     mo = &_max14912[i];
     _max14912ReadReg(MAX14912_REG_OV, mo, &mo->thsdRT, &mo->thsd);
+    mo->faultMemThsd |= mo->thsdRT;
     _max14912ThermalProt(mo);
   }
 
@@ -639,29 +643,35 @@ bool IonoD16Class::write(int pin, int val) {
 
 int IonoD16Class::wireBreakRead(int pin) {
   struct max22190Str* m;
-  int inIdx;
+  int ret, inIdx;
   if (!_max22190GetByPin(pin, &m, &inIdx)) {
     return -1;
   }
-  return _getBit(m->wb, inIdx) ? HIGH : LOW;
+  ret = _getBit(m->faultMemWb, inIdx) ? HIGH : LOW;
+  _setBit(&m->faultMemWb, inIdx, false);
+  return ret;
 }
 
 int IonoD16Class::openLoadRead(int pin) {
   struct max14912Str* m;
-  int outIdx;
+  int ret, outIdx;
   if (!_max14912GetByPin(pin, &m, &outIdx)) {
     return -1;
   }
-  return _getBit(m->ol, outIdx) ? HIGH : LOW;
+  ret = _getBit(m->faultMemOl, outIdx) ? HIGH : LOW;
+  _setBit(&m->faultMemOl, outIdx, false);
+  return ret;
 }
 
 int IonoD16Class::overVoltageRead(int pin) {
   struct max14912Str* m;
-  int outIdx;
+  int ret, outIdx;
   if (!_max14912GetByPin(pin, &m, &outIdx)) {
     return -1;
   }
-  return _getBit(m->ovRT, outIdx) ? HIGH : LOW;
+  ret = _getBit(m->faultMemOv, outIdx) ? HIGH : LOW;
+  _setBit(&m->faultMemOv, outIdx, false);
+  return ret;
 }
 
 int IonoD16Class::overVoltageLockRead(int pin) {
@@ -675,11 +685,13 @@ int IonoD16Class::overVoltageLockRead(int pin) {
 
 int IonoD16Class::thermalShutdownRead(int pin) {
   struct max14912Str* m;
-  int outIdx;
+  int ret, outIdx;
   if (!_max14912GetByPin(pin, &m, &outIdx)) {
     return -1;
   }
-  return _getBit(m->thsd, outIdx) ? HIGH : LOW;
+  ret = _getBit(m->faultMemThsd, outIdx) ? HIGH : LOW;
+  _setBit(&m->faultMemThsd, outIdx, false);
+  return ret;
 }
 
 int IonoD16Class::thermalShutdownLockRead(int pin) {

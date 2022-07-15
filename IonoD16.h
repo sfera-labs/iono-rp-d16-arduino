@@ -114,6 +114,7 @@ class IonoD16Class {
       byte fault1;
       byte fault2;
       byte cfgFlt[8];
+      byte faultMemWb;
     } _max22190[_MAX22190_NUM];
     struct max14912Str {
       int pinCs;
@@ -132,6 +133,9 @@ class IonoD16Class {
       byte cfgJoin;
       byte ovLock;
       byte thsdLock;
+      byte faultMemOl;
+      byte faultMemOv;
+      byte faultMemThsd;
       unsigned long lockTs[8];
     } _max14912[_MAX14912_NUM];
     struct subscribeStr {
