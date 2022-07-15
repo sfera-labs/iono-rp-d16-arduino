@@ -434,6 +434,17 @@ void IonoD16Class::_subscribeProcess(struct subscribeStr* s) {
   }
 }
 
+void IonoD16Class::_ledCtrl(bool on) {
+  byte x;
+  mutex_enter_blocking(&_spiMtx);
+  ::digitalWrite(IONO_PIN_CS_DOL, on ? LOW : HIGH);
+  ::digitalWrite(IONO_PIN_CS_DIH, LOW);
+  _spiTransaction(IONO_PIN_CS_DIL, 0, 0, 0, &x, &x, &x);
+  ::digitalWrite(IONO_PIN_CS_DIH, HIGH);
+  ::digitalWrite(IONO_PIN_CS_DOL, HIGH);
+  mutex_exit(&_spiMtx);
+}
+
 // Public ==========================
 
 bool IonoD16Class::setup() {
@@ -476,6 +487,9 @@ bool IonoD16Class::setup() {
   _max14912ReadStatCrc = _max14912Crc(_MAX14912_CMD_READ_RT_STAT, 0);
 
   mutex_init(&_spiMtx);
+
+  _ledSet = true;
+  _ledVal = false;
 
   _setupDone = true;
 
@@ -537,6 +551,11 @@ void IonoD16Class::process() {
     if (_subscribeDT[i].cb != NULL) {
       _subscribeProcess(&_subscribeDT[i]);
     }
+  }
+
+  if (_ledVal != _ledSet) {
+    _ledCtrl(_ledSet);
+    _ledVal = _ledSet;
   }
 }
 
@@ -703,6 +722,10 @@ void IonoD16Class::rs485TxEn(bool enabled) {
 
 void IonoD16Class::serialTxEn(bool enabled) {
   rs485TxEn(enabled);
+}
+
+void IonoD16Class::ledSet(bool on) {
+  _ledSet = on;
 }
 
 IonoD16Class Iono;

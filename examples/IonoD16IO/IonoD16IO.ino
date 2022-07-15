@@ -92,6 +92,8 @@ void loop() {
   flip = !flip;
   Serial.println(flip ? "HIGH" : "LOW");
 
+  Iono.ledSet(flip);
+
   if (!Iono.write(D1, flip ? HIGH : LOW)) {
     Serial.println("D1 write error");
   }

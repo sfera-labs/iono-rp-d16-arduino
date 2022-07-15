@@ -96,6 +96,7 @@ class IonoD16Class {
     bool outputsJoin(int, bool join=true);
     bool outputsClearFaults(int);
     void subscribe(int, unsigned long, void (*)(int, int));
+    void ledSet(bool);
 
   private:
     bool _setupDone;
@@ -103,6 +104,8 @@ class IonoD16Class {
     SPISettings _spiSettings;
     mutex_t _spiMtx;
     byte _max14912ReadStatCrc;
+    bool _ledSet;
+    bool _ledVal;
     struct max22190Str {
       int pinCs;
       bool error;
@@ -163,6 +166,7 @@ class IonoD16Class {
     bool _writeOutputProtected(int, int);
     bool _outputsJoinable(int);
     void _subscribeProcess(struct subscribeStr*);
+    void _ledCtrl(bool);
 };
 
 extern IonoD16Class Iono;
