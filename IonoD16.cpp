@@ -420,6 +420,20 @@ bool IonoD16Class::_outputsJoinable(int pin) {
   return true;
 }
 
+void IonoD16Class::_subscribeProcess(struct subscribeStr* s) {
+  int val = read(s->pin);
+  unsigned long ts = millis();
+  if (s->value != val) {
+    if ((ts - s->lastTs) >= s->debounceMs) {
+      s->value = val;
+      s->lastTs = ts;
+      s->cb(s->pin, val);
+    }
+  } else {
+    s->lastTs = ts;
+  }
+}
+
 // Public ==========================
 
 bool IonoD16Class::setup() {
@@ -512,6 +526,17 @@ void IonoD16Class::process() {
     mo = &_max14912[i];
     _max14912ReadReg(MAX14912_REG_OV, mo, &mo->thsdRT, &mo->thsd);
     _max14912ThermalProt(mo);
+  }
+
+  for (i = 0; i < 16; i++) {
+    if (_subscribeD[i].cb != NULL) {
+      _subscribeProcess(&_subscribeD[i]);
+    }
+  }
+  for (i = 0; i < 4; i++) {
+    if (_subscribeDT[i].cb != NULL) {
+      _subscribeProcess(&_subscribeDT[i]);
+    }
   }
 }
 
@@ -654,6 +679,22 @@ bool IonoD16Class::outputsClearFaults(int pin) {
   }
   m->clearFaults = true;
   return true;
+}
+
+void IonoD16Class::subscribe(int pin, unsigned long debounceMs, void (*cb)(int, int)) {
+  struct subscribeStr* s;
+  if (pin >= DT1 && pin <= DT4) {
+    s = &_subscribeDT[pin - DT1];
+  } else if (pin >= D1 && pin <= D16) {
+    s = &_subscribeD[pin - D1];
+  } else {
+    return;
+  }
+  s->pin = pin;
+  s->cb = cb;
+  s->debounceMs = debounceMs;
+  s->value = -1;
+  s->lastTs = millis();
 }
 
 void IonoD16Class::rs485TxEn(bool enabled) {

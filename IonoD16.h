@@ -95,6 +95,7 @@ class IonoD16Class {
     bool pinMode(int, int, bool wbol=false);
     bool outputsJoin(int, bool join=true);
     bool outputsClearFaults(int);
+    void subscribe(int, unsigned long, void (*)(int, int));
 
   private:
     bool _setupDone;
@@ -130,6 +131,13 @@ class IonoD16Class {
       byte thsdLock;
       unsigned long lockTs[8];
     } _max14912[_MAX14912_NUM];
+    struct subscribeStr {
+      int pin;
+      void (*cb)(int, int);
+      unsigned long debounceMs;
+      int value;
+      unsigned long lastTs;
+    } _subscribeD[16], _subscribeDT[4];
 
     bool _getBit(byte, int);
     void _setBit(byte*, int, bool);
@@ -154,6 +162,7 @@ class IonoD16Class {
     bool _pinModeOutputProtected(int, int, bool);
     bool _writeOutputProtected(int, int);
     bool _outputsJoinable(int);
+    void _subscribeProcess(struct subscribeStr*);
 };
 
 extern IonoD16Class Iono;

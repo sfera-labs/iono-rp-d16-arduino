@@ -78,6 +78,10 @@ void setup() {
     Serial.println("DT2 setup error");
   }
 
+  // Set callback function on D3 state change
+  // with 100ms debounce
+  Iono.subscribe(D3, 100, onDebounce);
+
   Serial.println("I/O setup done.");
 }
 
@@ -132,4 +136,11 @@ void loop() {
   // Clear open-load and thermal-shutdown
   // flags on all outputs in the range D1 - D8
   Iono.outputsClearFaults(D1);
+}
+
+void onDebounce(int pin, int val) {
+  Serial.print("D");
+  Serial.print(pin);
+  Serial.print(" debounce = ");
+  Serial.println(val);
 }
