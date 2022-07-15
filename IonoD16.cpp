@@ -641,9 +641,9 @@ int IonoD16Class::wireBreakRead(int pin) {
   struct max22190Str* m;
   int inIdx;
   if (!_max22190GetByPin(pin, &m, &inIdx)) {
-    return false;
+    return -1;
   }
-  return ((m->wb >> inIdx) & 1) == 1 ? HIGH : LOW;
+  return _getBit(m->wb, inIdx) ? HIGH : LOW;
 }
 
 int IonoD16Class::openLoadRead(int pin) {
