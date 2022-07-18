@@ -92,6 +92,8 @@ class IonoD16Class {
     int overVoltageLockRead(int);
     int thermalShutdownRead(int);
     int thermalShutdownLockRead(int);
+    int alarmT1Read(int);
+    int alarmT2Read(int);
     bool pinMode(int, int, bool wbol=false);
     bool outputsJoin(int, bool join=true);
     bool outputsClearFaults(int);
@@ -115,6 +117,9 @@ class IonoD16Class {
       byte fault2;
       byte cfgFlt[8];
       byte faultMemWb;
+      byte faultMemAlrmT1;
+      byte faultMemAlrmT2;
+      byte faultMemOtshdn;
     } _max22190[_MAX22190_NUM];
     struct max14912Str {
       int pinCs;

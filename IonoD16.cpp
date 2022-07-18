@@ -522,10 +522,15 @@ void IonoD16Class::process() {
   for (i = 0; i < _MAX22190_NUM; i++) {
     mi = &_max22190[i];
     _max22190ReadReg(MAX22190_REG_FAULT1, mi, &mi->fault1);
+    mi->faultMemAlrmT1 |= _getBit(mi->fault1, 3) ? 0xff : 0x00;
+    mi->faultMemAlrmT2 |= _getBit(mi->fault1, 4) ? 0xff : 0x00;
   }
-  for (i = 0; i < _MAX22190_NUM; i++) {
-    mi = &_max22190[i];
-    _max22190ReadReg(MAX22190_REG_FAULT2, mi, &mi->fault2);
+  if (_getBit(mi->fault1, 5)) {
+    for (i = 0; i < _MAX22190_NUM; i++) {
+      mi = &_max22190[i];
+      _max22190ReadReg(MAX22190_REG_FAULT2, mi, &mi->fault2);
+      mi->faultMemOtshdn |= _getBit(mi->fault2, 4) ? 0xff : 0x00;
+    }
   }
 
   for (i = 0; i < _MAX14912_NUM; i++) {
@@ -684,13 +689,19 @@ int IonoD16Class::overVoltageLockRead(int pin) {
 }
 
 int IonoD16Class::thermalShutdownRead(int pin) {
-  struct max14912Str* m;
-  int ret, outIdx;
-  if (!_max14912GetByPin(pin, &m, &outIdx)) {
+  struct max14912Str* mo;
+  struct max22190Str* mi;
+  int ret, outIdx, inIdx;
+  if (!_max14912GetByPin(pin, &mo, &outIdx)) {
     return -1;
   }
-  ret = _getBit(m->faultMemThsd, outIdx) ? HIGH : LOW;
-  _setBit(&m->faultMemThsd, outIdx, false);
+  if (!_max22190GetByPin(pin, &mi, &inIdx)) {
+    return -1;
+  }
+  ret = (_getBit(mo->faultMemThsd, outIdx) |
+          _getBit(mi->faultMemOtshdn, inIdx)) ? HIGH : LOW;
+  _setBit(&mo->faultMemThsd, outIdx, false);
+  _setBit(&mi->faultMemOtshdn, inIdx, false);
   return ret;
 }
 
@@ -701,6 +712,28 @@ int IonoD16Class::thermalShutdownLockRead(int pin) {
     return -1;
   }
   return _getBit(m->thsdLock, outIdx) ? HIGH : LOW;
+}
+
+int IonoD16Class::alarmT1Read(int pin) {
+  struct max22190Str* m;
+  int ret, inIdx;
+  if (!_max22190GetByPin(pin, &m, &inIdx)) {
+    return -1;
+  }
+  ret = _getBit(m->faultMemAlrmT1, inIdx) ? HIGH : LOW;
+  _setBit(&m->faultMemAlrmT1, inIdx, false);
+  return ret;
+}
+
+int IonoD16Class::alarmT2Read(int pin) {
+  struct max22190Str* m;
+  int ret, inIdx;
+  if (!_max22190GetByPin(pin, &m, &inIdx)) {
+    return -1;
+  }
+  ret = _getBit(m->faultMemAlrmT2, inIdx) ? HIGH : LOW;
+  _setBit(&m->faultMemAlrmT2, inIdx, false);
+  return ret;
 }
 
 bool IonoD16Class::outputsClearFaults(int pin) {

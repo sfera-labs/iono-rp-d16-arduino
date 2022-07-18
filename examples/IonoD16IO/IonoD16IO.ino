@@ -127,6 +127,10 @@ void loop() {
     Serial.print(Iono.thermalShutdownRead(d));
     Serial.print("\tTSL = ");
     Serial.print(Iono.thermalShutdownLockRead(d));
+    Serial.print("\tAT1 = ");
+    Serial.print(Iono.alarmT1Read(d));
+    Serial.print("\tAT2 = ");
+    Serial.print(Iono.alarmT2Read(d));
     Serial.println();
   }
 
