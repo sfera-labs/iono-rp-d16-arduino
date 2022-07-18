@@ -36,8 +36,6 @@ void setup() {
   
   Serial.println("Ready!");
 
-  delay(500);
-
   // Setup D1 as push-pull output
   if (!Iono.pinMode(D1, OUTPUT_PP)) {
     Serial.println("D1 setup error");
@@ -76,6 +74,15 @@ void setup() {
   // Setup DT2 as input
   if (!Iono.pinMode(DT2, INPUT)) {
     Serial.println("DT2 setup error");
+  }
+
+  // Setup D4 as push-pull output 
+  // with 1Hz frequency, 50% duty-cycle PWM
+  if (!Iono.pinMode(D4, OUTPUT_PP)) {
+    Serial.println("D4 setup error");
+  }
+  if (!Iono.pwmSet(D4, 1, 65535 / 2)) {
+    Serial.println("D4 PWM setup error");
   }
 
   // Set callback function on D3 state change

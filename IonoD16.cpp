@@ -504,6 +504,7 @@ bool IonoD16Class::ready() {
 
 void IonoD16Class::process() {
   int i;
+  unsigned long ts, dts;
   struct max22190Str* mi;
   struct max14912Str* mo;
 
@@ -559,6 +560,21 @@ void IonoD16Class::process() {
   for (i = 0; i < 4; i++) {
     if (_subscribeDT[i].cb != NULL) {
       _subscribeProcess(&_subscribeDT[i]);
+    }
+  }
+
+  ts = micros();
+  for (i = 0; i < 16; i++) {
+    if (_pwm[i].periodUs > 0) {
+      dts = ts - _pwm[i].startTs;
+      if (dts > _pwm[i].periodUs) {
+        _writeOutputProtected(i + 1, HIGH);
+        _pwm[i].startTs = micros();
+        _pwm[i].on = true;
+      } else if (_pwm[i].on && dts > _pwm[i].dutyUs) {
+        _writeOutputProtected(i + 1, LOW);
+        _pwm[i].on = false;
+      }
     }
   }
 
@@ -639,6 +655,9 @@ bool IonoD16Class::write(int pin, int val) {
   if (pin >= DT1 && pin <= DT4) {
     ::digitalWrite(pin, val == HIGH ? HIGH : LOW);
     return true;
+  }
+  if (pin < D1 || pin > D16) {
+    return false;
   }
   if (_pinMode[pin - 1] != OUTPUT_HS && _pinMode[pin - 1] != OUTPUT_PP) {
     return false;
@@ -771,6 +790,25 @@ void IonoD16Class::serialTxEn(bool enabled) {
 
 void IonoD16Class::ledSet(bool on) {
   _ledSet = on;
+}
+
+bool IonoD16Class::pwmSet(int pin, int freqHz, uint16_t dutyU16) {
+  if (pin < D1 || pin > D16) {
+    return false;
+  }
+  if (_pinMode[pin - 1] != OUTPUT_PP) {
+    return false;
+  }
+  _pwm[pin - 1].periodUs = 0;
+  _pwm[pin - 1].dutyUs = 1000000ull * dutyU16 / 65535ull;
+  if (_pwm[pin - 1].dutyUs == 0) {
+    return false;
+  }
+  _writeOutputProtected(pin, HIGH);
+  _pwm[pin - 1].startTs = micros();
+  _pwm[pin - 1].on = true;
+  _pwm[pin - 1].periodUs = 1000000ull / freqHz;
+  return true;
 }
 
 IonoD16Class Iono;

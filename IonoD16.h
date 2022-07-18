@@ -99,6 +99,7 @@ class IonoD16Class {
     bool outputsClearFaults(int);
     void subscribe(int, unsigned long, void (*)(int, int));
     void ledSet(bool);
+    bool pwmSet(int, int, uint16_t);
 
   private:
     bool _setupDone;
@@ -150,6 +151,12 @@ class IonoD16Class {
       int value;
       unsigned long lastTs;
     } _subscribeD[16], _subscribeDT[4];
+    struct pwmStr {
+      unsigned long periodUs;
+      unsigned long dutyUs;
+      unsigned long startTs;
+      bool on;
+    } _pwm[16];
 
     bool _getBit(byte, int);
     void _setBit(byte*, int, bool);
