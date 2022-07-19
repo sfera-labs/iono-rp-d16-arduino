@@ -826,10 +826,11 @@ bool IonoD16Class::pwmSet(int pin, int freqHz, uint16_t dutyU16) {
     return false;
   }
   _pwm[pin - 1].periodUs = 0;
-  _pwm[pin - 1].dutyUs = 1000000ull * dutyU16 / 65535ull;
-  if (_pwm[pin - 1].dutyUs == 0) {
-    return false;
+  if (dutyU16 == 0) {
+    _writeOutputProtected(pin, LOW);
+    return true;
   }
+  _pwm[pin - 1].dutyUs = 1000000ull * dutyU16 / 65535ull;
   _writeOutputProtected(pin, HIGH);
   _pwm[pin - 1].startTs = micros();
   _pwm[pin - 1].on = true;
