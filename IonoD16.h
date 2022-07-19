@@ -109,6 +109,8 @@ class IonoD16Class {
     byte _max14912ReadStatCrc;
     bool _ledSet;
     bool _ledVal;
+    unsigned long _processTs;
+    int _processStep;
     struct max22190Str {
       int pinCs;
       bool error;

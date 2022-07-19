@@ -515,41 +515,60 @@ void IonoD16Class::process() {
   // Devices are read alternately to avoid delays between
   // subsequent SPI cycles
 
+  // WB is read always to update the inputs state
   for (i = 0; i < _MAX22190_NUM; i++) {
     mi = &_max22190[i];
     _max22190ReadReg(MAX22190_REG_WB, mi, &mi->wb);
     mi->faultMemWb |= mi->wb;
   }
-  for (i = 0; i < _MAX22190_NUM; i++) {
-    mi = &_max22190[i];
-    _max22190ReadReg(MAX22190_REG_FAULT1, mi, &mi->fault1);
-    mi->faultMemAlrmT1 |= _getBit(mi->fault1, 3) ? 0xff : 0x00;
-    mi->faultMemAlrmT2 |= _getBit(mi->fault1, 4) ? 0xff : 0x00;
-  }
-  if (_getBit(mi->fault1, 5)) {
-    for (i = 0; i < _MAX22190_NUM; i++) {
-      mi = &_max22190[i];
-      _max22190ReadReg(MAX22190_REG_FAULT2, mi, &mi->fault2);
-      mi->faultMemOtshdn |= _getBit(mi->fault2, 4) ? 0xff : 0x00;
-    }
-  }
 
-  for (i = 0; i < _MAX14912_NUM; i++) {
-    mo = &_max14912[i];
-    _max14912ReadReg(MAX14912_REG_OL, mo, &mo->olRT, &mo->ol);
-    mo->faultMemOl |= mo->olRT;
-  }
-  for (i = 0; i < _MAX14912_NUM; i++) {
-    mo = &_max14912[i];
-    _max14912ReadReg(MAX14912_REG_OV, mo, &mo->ovRT, NULL);
-    mo->faultMemOv |= mo->ovRT;
-    _max14912OverVoltProt(mo);
-  }
-  for (i = 0; i < _MAX14912_NUM; i++) {
-    mo = &_max14912[i];
-    _max14912ReadReg(MAX14912_REG_OV, mo, &mo->thsdRT, &mo->thsd);
-    mo->faultMemThsd |= mo->thsdRT;
-    _max14912ThermalProt(mo);
+  if (millis() - _processTs > 20) {
+    switch (_processStep++) {
+      case 0:
+        for (i = 0; i < _MAX22190_NUM; i++) {
+          mi = &_max22190[i];
+          _max22190ReadReg(MAX22190_REG_FAULT1, mi, &mi->fault1);
+          mi->faultMemAlrmT1 |= _getBit(mi->fault1, 3) ? 0xff : 0x00;
+          mi->faultMemAlrmT2 |= _getBit(mi->fault1, 4) ? 0xff : 0x00;
+        }
+        if (_getBit(mi->fault1, 5)) {
+          for (i = 0; i < _MAX22190_NUM; i++) {
+            mi = &_max22190[i];
+            _max22190ReadReg(MAX22190_REG_FAULT2, mi, &mi->fault2);
+            mi->faultMemOtshdn |= _getBit(mi->fault2, 4) ? 0xff : 0x00;
+          }
+        }
+        break;
+
+      case 1:
+        for (i = 0; i < _MAX14912_NUM; i++) {
+          mo = &_max14912[i];
+          _max14912ReadReg(MAX14912_REG_OL, mo, &mo->olRT, &mo->ol);
+          mo->faultMemOl |= mo->olRT;
+        }
+        break;
+
+      case 2:
+        for (i = 0; i < _MAX14912_NUM; i++) {
+          mo = &_max14912[i];
+          _max14912ReadReg(MAX14912_REG_OV, mo, &mo->ovRT, NULL);
+          mo->faultMemOv |= mo->ovRT;
+          _max14912OverVoltProt(mo);
+        }
+        break;
+
+      default:
+        for (i = 0; i < _MAX14912_NUM; i++) {
+          mo = &_max14912[i];
+          _max14912ReadReg(MAX14912_REG_OV, mo, &mo->thsdRT, &mo->thsd);
+          mo->faultMemThsd |= mo->thsdRT;
+          _max14912ThermalProt(mo);
+        }
+        _processStep = 0;
+        break;
+    }
+
+    _processTs = millis();
   }
 
   for (i = 0; i < 16; i++) {
