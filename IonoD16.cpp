@@ -557,6 +557,13 @@ void IonoD16Class::process() {
         }
         break;
 
+      case 3:
+        for (i = 0; i < _MAX14912_NUM; i++) {
+          mo = &_max14912[i];
+          _max14912Cmd(_MAX14912_CMD_SET_STATE, mo, mo->outputs);
+        }
+        break;
+
       default:
         for (i = 0; i < _MAX14912_NUM; i++) {
           mo = &_max14912[i];
