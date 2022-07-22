@@ -73,6 +73,13 @@
 #define OUTPUT_HS (OUTPUT + 100)
 #define OUTPUT_PP (OUTPUT + 101)
 
+#define LINK_NONE 0
+#define LINK_FOLLOW 1
+#define LINK_INVERT 2
+#define LINK_FLIP_H 3
+#define LINK_FLIP_L 4
+#define LINK_FLIP_T 5
+
 #define _MAX22190_NUM 2
 #define _MAX14912_NUM 2
 
@@ -86,6 +93,7 @@ class IonoD16Class {
     void process();
     int read(int);
     bool write(int, int);
+    bool flip(int);
     int wireBreakRead(int);
     int openLoadRead(int);
     int overVoltageRead(int);
@@ -98,6 +106,7 @@ class IonoD16Class {
     bool outputsJoin(int, bool join=true);
     bool outputsClearFaults(int);
     void subscribe(int, unsigned long, void (*)(int, int));
+    void link(int, int, int, unsigned long);
     void ledSet(bool);
     bool pwmSet(int, int, uint16_t);
 
@@ -153,6 +162,14 @@ class IonoD16Class {
       int value;
       unsigned long lastTs;
     } _subscribeD[16], _subscribeDT[4];
+    struct linkStr {
+      int inPin;
+      int outPin;
+      int mode;
+      unsigned long debounceMs;
+      int value;
+      unsigned long lastTs;
+    } _linkD[16][16];
     struct pwmStr {
       unsigned long periodUs;
       unsigned long dutyUs;
@@ -184,6 +201,7 @@ class IonoD16Class {
     bool _writeOutputProtected(int, int);
     bool _outputsJoinable(int);
     void _subscribeProcess(struct subscribeStr*);
+    void _linkProcess(struct linkStr*);
     void _ledCtrl(bool);
 };
 

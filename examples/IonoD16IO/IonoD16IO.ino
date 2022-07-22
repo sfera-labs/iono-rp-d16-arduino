@@ -89,6 +89,10 @@ void setup() {
   // with 100ms debounce
   Iono.subscribe(D3, 100, onDebounce);
 
+  // Flip D2 on every low-to-high transition of D3
+  // after a 50ms debounce
+  Iono.link(D3, D2, LINK_FLIP_H, 50);
+
   Serial.println("I/O setup done.");
 }
 
@@ -103,9 +107,6 @@ void loop() {
 
   if (!Iono.write(D1, flip ? HIGH : LOW)) {
     Serial.println("D1 write error");
-  }
-  if (!Iono.write(D2, flip ? HIGH : LOW)) {
-    Serial.println("D2 write error");
   }
   // Writing D5 will drive D6 too
   if (!Iono.write(D5, flip ? HIGH : LOW)) {

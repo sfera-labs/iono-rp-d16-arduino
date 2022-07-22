@@ -434,6 +434,43 @@ void IonoD16Class::_subscribeProcess(struct subscribeStr* s) {
   }
 }
 
+void IonoD16Class::_linkProcess(struct linkStr* l) {
+  if (l->inPin == 0 || l->outPin == 0 || l->mode == LINK_NONE) {
+    return;
+  }
+  int val = read(l->inPin);
+  unsigned long ts = millis();
+  if (l->value != val) {
+    if ((ts - l->lastTs) >= l->debounceMs) {
+      l->value = val;
+      l->lastTs = ts;
+      switch (l->mode) {
+        case LINK_FOLLOW:
+          write(l->outPin, val);
+          break;
+        case LINK_INVERT:
+          write(l->outPin, val == HIGH ? LOW : HIGH);
+          break;
+        case LINK_FLIP_T:
+          flip(l->outPin);
+          break;
+        case LINK_FLIP_H:
+          if (val == HIGH) {
+            flip(l->outPin);
+          }
+          break;
+        case LINK_FLIP_L:
+          if (val == LOW) {
+            flip(l->outPin);
+          }
+          break;
+      }
+    }
+  } else {
+    l->lastTs = ts;
+  }
+}
+
 void IonoD16Class::_ledCtrl(bool on) {
   byte x;
   mutex_enter_blocking(&_spiMtx);
@@ -503,7 +540,7 @@ bool IonoD16Class::ready() {
 }
 
 void IonoD16Class::process() {
-  int i;
+  int i, j;
   unsigned long ts, dts;
   struct max22190Str* mi;
   struct max14912Str* mo;
@@ -581,6 +618,9 @@ void IonoD16Class::process() {
   for (i = 0; i < 16; i++) {
     if (_subscribeD[i].cb != NULL) {
       _subscribeProcess(&_subscribeD[i]);
+    }
+    for (j = 0; j < 16; j++) {
+      _linkProcess(&_linkD[i][j]);
     }
   }
   for (i = 0; i < 4; i++) {
@@ -689,6 +729,14 @@ bool IonoD16Class::write(int pin, int val) {
     return false;
   }
   return _writeOutputProtected(pin, val);
+}
+
+bool IonoD16Class::flip(int pin) {
+  int val = read(pin);
+  if (val < 0) {
+    return false;
+  }
+  return write(pin, val == HIGH ? LOW : HIGH);
 }
 
 int IonoD16Class::wireBreakRead(int pin) {
@@ -804,6 +852,21 @@ void IonoD16Class::subscribe(int pin, unsigned long debounceMs, void (*cb)(int, 
   s->debounceMs = debounceMs;
   s->value = -1;
   s->lastTs = millis();
+}
+
+void IonoD16Class::link(int inPin, int outPin, int mode, unsigned long debounceMs) {
+  struct linkStr* l;
+  if (inPin >= D1 && inPin <= D16 && outPin >= D1 && outPin <= D16) {
+    l = &_linkD[inPin - D1][outPin - D1];
+  } else {
+    return;
+  }
+  l->inPin = inPin;
+  l->outPin = outPin;
+  l->mode = mode;
+  l->debounceMs = debounceMs;
+  l->value = -1;
+  l->lastTs = millis();
 }
 
 void IonoD16Class::rs485TxEn(bool enabled) {
