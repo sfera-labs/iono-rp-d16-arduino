@@ -3,26 +3,63 @@
 
 #define MB_REG_CFG_START               1000
 #define MB_REG_CFG_OFFSET_COMMIT       0
+
 #define MB_REG_CFG_OFFSET_MB_ADDR      1
 #define MB_REG_CFG_OFFSET_MB_BAUD      2
 #define MB_REG_CFG_OFFSET_MB_PARITY    3
+
 #define MB_REG_CFG_OFFSET_MODE_D1      4
-#define MB_REG_CFG_OFFSET_MODE_D2      (MB_REG_CFG_OFFSET_MODE_D1 + 1)
-#define MB_REG_CFG_OFFSET_MODE_D3      (MB_REG_CFG_OFFSET_MODE_D1 + 2)
-#define MB_REG_CFG_OFFSET_MODE_D4      (MB_REG_CFG_OFFSET_MODE_D1 + 3)
-#define MB_REG_CFG_OFFSET_MODE_D5      (MB_REG_CFG_OFFSET_MODE_D1 + 4)
-#define MB_REG_CFG_OFFSET_MODE_D6      (MB_REG_CFG_OFFSET_MODE_D1 + 5)
-#define MB_REG_CFG_OFFSET_MODE_D7      (MB_REG_CFG_OFFSET_MODE_D1 + 6)
-#define MB_REG_CFG_OFFSET_MODE_D8      (MB_REG_CFG_OFFSET_MODE_D1 + 7)
-#define MB_REG_CFG_OFFSET_MODE_D9      (MB_REG_CFG_OFFSET_MODE_D1 + 8)
-#define MB_REG_CFG_OFFSET_MODE_D10     (MB_REG_CFG_OFFSET_MODE_D1 + 9)
-#define MB_REG_CFG_OFFSET_MODE_D11     (MB_REG_CFG_OFFSET_MODE_D1 + 10)
-#define MB_REG_CFG_OFFSET_MODE_D12     (MB_REG_CFG_OFFSET_MODE_D1 + 11)
-#define MB_REG_CFG_OFFSET_MODE_D13     (MB_REG_CFG_OFFSET_MODE_D1 + 12)
-#define MB_REG_CFG_OFFSET_MODE_D14     (MB_REG_CFG_OFFSET_MODE_D1 + 13)
-#define MB_REG_CFG_OFFSET_MODE_D15     (MB_REG_CFG_OFFSET_MODE_D1 + 14)
-#define MB_REG_CFG_OFFSET_MODE_D16     (MB_REG_CFG_OFFSET_MODE_D1 + 15)
-#define MB_REG_CFG_OFFSET_MAX          MB_REG_CFG_OFFSET_MODE_D16
+#define MB_REG_CFG_OFFSET_MODE_D2      5
+#define MB_REG_CFG_OFFSET_MODE_D3      6
+#define MB_REG_CFG_OFFSET_MODE_D4      7
+#define MB_REG_CFG_OFFSET_MODE_D5      8
+#define MB_REG_CFG_OFFSET_MODE_D6      9
+#define MB_REG_CFG_OFFSET_MODE_D7      10
+#define MB_REG_CFG_OFFSET_MODE_D8      11
+#define MB_REG_CFG_OFFSET_MODE_D9      12
+#define MB_REG_CFG_OFFSET_MODE_D10     13
+#define MB_REG_CFG_OFFSET_MODE_D11     14
+#define MB_REG_CFG_OFFSET_MODE_D12     15
+#define MB_REG_CFG_OFFSET_MODE_D13     16
+#define MB_REG_CFG_OFFSET_MODE_D14     17
+#define MB_REG_CFG_OFFSET_MODE_D15     18
+#define MB_REG_CFG_OFFSET_MODE_D16     19
+
+#define MB_REG_CFG_OFFSET_LINK_D1      20
+#define MB_REG_CFG_OFFSET_LINK_D2      21
+#define MB_REG_CFG_OFFSET_LINK_D3      22
+#define MB_REG_CFG_OFFSET_LINK_D4      23
+#define MB_REG_CFG_OFFSET_LINK_D5      24
+#define MB_REG_CFG_OFFSET_LINK_D6      25
+#define MB_REG_CFG_OFFSET_LINK_D7      26
+#define MB_REG_CFG_OFFSET_LINK_D8      27
+#define MB_REG_CFG_OFFSET_LINK_D9      28
+#define MB_REG_CFG_OFFSET_LINK_D10     29
+#define MB_REG_CFG_OFFSET_LINK_D11     30
+#define MB_REG_CFG_OFFSET_LINK_D12     31
+#define MB_REG_CFG_OFFSET_LINK_D13     32
+#define MB_REG_CFG_OFFSET_LINK_D14     33
+#define MB_REG_CFG_OFFSET_LINK_D15     34
+#define MB_REG_CFG_OFFSET_LINK_D16     35
+
+#define MB_REG_CFG_OFFSET_RULE_D1      36
+#define MB_REG_CFG_OFFSET_RULE_D2      37
+#define MB_REG_CFG_OFFSET_RULE_D3      38
+#define MB_REG_CFG_OFFSET_RULE_D4      39
+#define MB_REG_CFG_OFFSET_RULE_D5      40
+#define MB_REG_CFG_OFFSET_RULE_D6      41
+#define MB_REG_CFG_OFFSET_RULE_D7      42
+#define MB_REG_CFG_OFFSET_RULE_D8      43
+#define MB_REG_CFG_OFFSET_RULE_D9      44
+#define MB_REG_CFG_OFFSET_RULE_D10     45
+#define MB_REG_CFG_OFFSET_RULE_D11     46
+#define MB_REG_CFG_OFFSET_RULE_D12     47
+#define MB_REG_CFG_OFFSET_RULE_D13     48
+#define MB_REG_CFG_OFFSET_RULE_D14     49
+#define MB_REG_CFG_OFFSET_RULE_D15     50
+#define MB_REG_CFG_OFFSET_RULE_D16     51
+
+#define MB_REG_CFG_OFFSET_MAX          MB_REG_CFG_OFFSET_RULE_D16
 
 static word _cfgRegisters[MB_REG_CFG_OFFSET_MAX + 1];
 
@@ -249,33 +286,35 @@ static byte _modbusOnRequest(byte unitAddr, byte function, word regAddr, word qt
 
         for (int i = offset; i < offsetEnd; i++) {
           word val = ModbusRtuSlave.getDataRegister(function, data, i - offset);
-          switch (i) {
-            case MB_REG_CFG_OFFSET_COMMIT:
-              if (qty != 1 || val != CFG_COMMIT_VAL) {
-                return MB_EX_ILLEGAL_DATA_VALUE;
-              }
-              commit = true;
-              break;
-            case MB_REG_CFG_OFFSET_MB_ADDR:
-              if (val < 1 || val > 247) {
-                return MB_EX_ILLEGAL_DATA_VALUE;
-              }
-              break;
-            case MB_REG_CFG_OFFSET_MB_BAUD:
-              if (val < 1 || val > 8) {
-                return MB_EX_ILLEGAL_DATA_VALUE;
-              }
-              break;
-            case MB_REG_CFG_OFFSET_MB_PARITY:
-              if (val < 1 || val > 3) {
-                return MB_EX_ILLEGAL_DATA_VALUE;
-              }
-              break;
-            default: // pin mode
-              if (val < 1 || val > 6) {
-                return MB_EX_ILLEGAL_DATA_VALUE;
-              }
-              break;
+          if (i == MB_REG_CFG_OFFSET_COMMIT) {
+            if (qty != 1 || val != CFG_COMMIT_VAL) {
+              return MB_EX_ILLEGAL_DATA_VALUE;
+            }
+            commit = true;
+          } else if (i == MB_REG_CFG_OFFSET_MB_ADDR) {
+            if (val < 1 || val > 247) {
+              return MB_EX_ILLEGAL_DATA_VALUE;
+            }
+          } else if (i == MB_REG_CFG_OFFSET_MB_BAUD) {
+            if (val < 1 || val > 8) {
+              return MB_EX_ILLEGAL_DATA_VALUE;
+            }
+          } else if (i == MB_REG_CFG_OFFSET_MB_PARITY) {
+            if (val < 1 || val > 3) {
+              return MB_EX_ILLEGAL_DATA_VALUE;
+            }
+          } else if (i >= MB_REG_CFG_OFFSET_MODE_D1 && i <= MB_REG_CFG_OFFSET_MODE_D16) {
+            if (val < 1 || val > 6) {
+              return MB_EX_ILLEGAL_DATA_VALUE;
+            }
+          } else if (i >= MB_REG_CFG_OFFSET_LINK_D1 && i <= MB_REG_CFG_OFFSET_LINK_D16) {
+            if (val < 0 || val > 16) {
+              return MB_EX_ILLEGAL_DATA_VALUE;
+            }
+          } else if (i >= MB_REG_CFG_OFFSET_RULE_D1 && i <= MB_REG_CFG_OFFSET_RULE_D16) {
+            if (val != 'F' && val != 'I' && val != 'H' && val != 'L' && val != 'T') {
+              return MB_EX_ILLEGAL_DATA_VALUE;
+            }
           }
           _cfgRegisters[i] = val;
         }

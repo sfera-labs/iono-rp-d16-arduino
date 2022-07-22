@@ -79,6 +79,30 @@ void setup() {
       Iono.outputsJoin(d);
     }
   }
+
+  for (int d = D1; d <= D16; d++) {
+    word in = _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D1 + (d - D1)];
+    if (in >= D1 && in <= D16) {
+      word rule = _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D1 + (d - D1)];
+      switch (rule) {
+        case 'F':
+          Iono.link(in, d, LINK_FOLLOW, LINK_DEBOUNCE_MS);
+          break;
+        case 'I':
+          Iono.link(in, d, LINK_INVERT, LINK_DEBOUNCE_MS);
+          break;
+        case 'H':
+          Iono.link(in, d, LINK_FLIP_H, LINK_DEBOUNCE_MS);
+          break;
+        case 'L':
+          Iono.link(in, d, LINK_FLIP_L, LINK_DEBOUNCE_MS);
+          break;
+        case 'T':
+          Iono.link(in, d, LINK_FLIP_T, LINK_DEBOUNCE_MS);
+          break;
+      }
+    }
+  }
 }
 
 void loop() {
@@ -106,6 +130,7 @@ void loadConfig() {
     _cfgRegisters[MB_REG_CFG_OFFSET_MB_ADDR] = CFG_MB_UNIT_ADDDR;
     _cfgRegisters[MB_REG_CFG_OFFSET_MB_BAUD] = CFG_MB_BAUDRATE;
     _cfgRegisters[MB_REG_CFG_OFFSET_MB_PARITY] = CFG_MB_PARITY;
+    
     _cfgRegisters[MB_REG_CFG_OFFSET_MODE_D1] = CFG_MODE_D1;
     _cfgRegisters[MB_REG_CFG_OFFSET_MODE_D2] = CFG_MODE_D2;
     _cfgRegisters[MB_REG_CFG_OFFSET_MODE_D3] = CFG_MODE_D3;
@@ -122,5 +147,39 @@ void loadConfig() {
     _cfgRegisters[MB_REG_CFG_OFFSET_MODE_D14] = CFG_MODE_D14;
     _cfgRegisters[MB_REG_CFG_OFFSET_MODE_D15] = CFG_MODE_D15;
     _cfgRegisters[MB_REG_CFG_OFFSET_MODE_D16] = CFG_MODE_D16;
+
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D1] = CFG_LINK_D1;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D2] = CFG_LINK_D2;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D3] = CFG_LINK_D3;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D4] = CFG_LINK_D4;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D5] = CFG_LINK_D5;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D6] = CFG_LINK_D6;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D7] = CFG_LINK_D7;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D8] = CFG_LINK_D8;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D9] = CFG_LINK_D9;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D10] = CFG_LINK_D10;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D11] = CFG_LINK_D11;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D12] = CFG_LINK_D12;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D13] = CFG_LINK_D13;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D14] = CFG_LINK_D14;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D15] = CFG_LINK_D15;
+    _cfgRegisters[MB_REG_CFG_OFFSET_LINK_D16] = CFG_LINK_D16;
+
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D1] = CFG_RULE_D1;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D2] = CFG_RULE_D2;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D3] = CFG_RULE_D3;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D4] = CFG_RULE_D4;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D5] = CFG_RULE_D5;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D6] = CFG_RULE_D6;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D7] = CFG_RULE_D7;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D8] = CFG_RULE_D8;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D9] = CFG_RULE_D9;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D10] = CFG_RULE_D10;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D11] = CFG_RULE_D11;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D12] = CFG_RULE_D12;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D13] = CFG_RULE_D13;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D14] = CFG_RULE_D14;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D15] = CFG_RULE_D15;
+    _cfgRegisters[MB_REG_CFG_OFFSET_RULE_D16] = CFG_RULE_D16;
   }
 }
