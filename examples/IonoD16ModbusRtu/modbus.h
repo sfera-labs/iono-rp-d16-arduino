@@ -157,7 +157,7 @@ static byte _modbusOnRequest(byte unitAddr, byte function, word regAddr, word qt
         }
         return MB_RESP_OK;
       }
-      // fall into case MB_FC_READ_COILS to have registers 1-16
+      // fall into case MB_FC_READ_COILS to have registers below
       // readable with MB_FC_READ_DISCRETE_INPUTS too
 
     case MB_FC_READ_COILS:
@@ -167,8 +167,8 @@ static byte _modbusOnRequest(byte unitAddr, byte function, word regAddr, word qt
         }
         return MB_RESP_OK;
       }
-      if (_checkAddrRange(regAddr, qty, 3101, 3116)) {
-        for (int i = regAddr - 3100; i < regAddr - 3100 + qty; i++) {
+      if (_checkAddrRange(regAddr, qty, 24101, 2416)) {
+        for (int i = regAddr - 2400; i < regAddr - 2400 + qty; i++) {
           ModbusRtuSlave.responseAddBit(_debounce[i - 1]);
         }
         return MB_RESP_OK;
@@ -195,8 +195,8 @@ static byte _modbusOnRequest(byte unitAddr, byte function, word regAddr, word qt
       return MB_EX_ILLEGAL_DATA_ADDRESS;
 
     case MB_FC_READ_INPUT_REGISTER:
-      if (_checkAddrRange(regAddr, qty, 3201, 3216)) {
-        for (int i = regAddr - 3200; i < regAddr - 3200 + qty; i++) {
+      if (_checkAddrRange(regAddr, qty, 2501, 2516)) {
+        for (int i = regAddr - 2500; i < regAddr - 2500 + qty; i++) {
           ModbusRtuSlave.responseAddRegister(_counters[i - 1]);
         }
         return MB_RESP_OK;
@@ -268,9 +268,9 @@ static byte _modbusOnRequest(byte unitAddr, byte function, word regAddr, word qt
         }
         return ok ? MB_RESP_OK : MB_EX_ILLEGAL_FUNCTION;
       }
-      if (_checkAddrRange(regAddr, qty, 3001, 3016)) {
-        for (int i = regAddr - 3000; i < regAddr - 3000 + qty; i++) {
-          word deb = ModbusRtuSlave.getDataRegister(function, data, i - (regAddr - 3000));
+      if (_checkAddrRange(regAddr, qty, 2301, 2316)) {
+        for (int i = regAddr - 2300; i < regAddr - 2300 + qty; i++) {
+          word deb = ModbusRtuSlave.getDataRegister(function, data, i - (regAddr - 2300));
           if (deb > 0) {
             Iono.subscribe(i, deb, _debounceCb);
           } else {
