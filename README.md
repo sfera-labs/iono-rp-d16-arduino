@@ -11,10 +11,10 @@ https://github.com/earlephilhower/arduino-pico
 
 ## Library installation
 
+- [Download this repo](https://github.com/sfera-labs/iono-rp-d16-arduino/archive/refs/heads/master.zip)
 - Open the Arduino IDE
-- Download this repo: `git clone --depth 1 --recursive https://github.com/sfera-labs/iono-rp-d16-arduino`
 - Go to the menu *Sketch* > *Include Library* > *Add .ZIP Library...*
-- Select the downloaded folder
+- Select the downloaded zip file
 
 After installation you will see the example sketches under the menu *File* > *Examples* > *Iono RP D16*.
 
