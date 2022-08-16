@@ -35,7 +35,7 @@ After the first upload, the board will appear under the standard Serial ports li
 
 ## Library usage
 
-For a quick start, check out the [examples](./examples).
+For a quick start and ready-to-use applications, check out the [examples](./examples).
 
 Following some more details:
 
