@@ -590,7 +590,9 @@ void IonoD16Class::process() {
           mo = &_max14912[i];
           _max14912ReadReg(MAX14912_REG_OV, mo, &mo->ovRT, NULL);
           mo->faultMemOv |= mo->ovRT;
-          _max14912OverVoltProt(mo);
+          if (mo->ovProtEn) {
+            _max14912OverVoltProt(mo);
+          }
         }
         break;
 
@@ -651,6 +653,9 @@ void IonoD16Class::process() {
 }
 
 bool IonoD16Class::pinMode(int pin, int mode, bool wbol) {
+  struct max14912Str* mo;
+  int outIdx;
+
   if (pin >= DT1 && pin <= DT4) {
     if (mode == INPUT) {
       ::pinMode(pin, INPUT);
@@ -680,6 +685,10 @@ bool IonoD16Class::pinMode(int pin, int mode, bool wbol) {
     if (!_pinModeInput(pin, false)) {
       return false;
     }
+    if (!_max14912GetByPin(pin, &mo, &outIdx)) {
+      return false;
+    }
+    mo->ovProtEn = true;
     ok = _pinModeOutputProtected(pin, mode, wbol);
   }
   if (ok) {

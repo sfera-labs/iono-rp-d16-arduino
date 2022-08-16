@@ -139,6 +139,7 @@ class IonoD16Class {
       byte outputs;
       byte outputsUser;
       bool clearFaults;
+      bool ovProtEn;
       byte ol;
       byte olRT;
       byte ovRT;
