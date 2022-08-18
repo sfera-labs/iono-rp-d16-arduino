@@ -45,7 +45,7 @@
 #define _MAX14912_CMD_READ_RT_STAT 0b110000
 
 #define _PROT_OV_LOCK_MS 10000
-#define _PROT_THSD_LOCK_MS 10000
+#define _PROT_THSD_LOCK_MS 30000
 
 IonoD16Class::IonoD16Class() {
 }
@@ -302,17 +302,17 @@ bool IonoD16Class::_max14912ModePPSet(struct max14912Str* m, int outIdx, bool va
 
 void IonoD16Class::_max14912OverVoltProt(struct max14912Str* m) {
   for (int oi = 0; oi < 8; oi++) {
-    if (_getBit(m->ovRT, oi) &&
-        !_getBit(m->cfgModePP, oi) &&
-        (!_getBit(m->outputs, oi) || _getBit(m->ovLock, oi)) ) {
+    if (_getBit(m->ovRT, oi) && !_getBit(m->cfgModePP, oi)) {
       _setBit(&m->ovLock, oi, true);
-      if (!_getBit(m->outputs, oi)) {
+      if (!_getBit(m->outputs, oi) && !_getBit(m->thsdLock, oi)) {
         _max14912OutputSet(m, oi, true);
       }
       m->lockTs[oi] = millis();
     } else if (_getBit(m->ovLock, oi)) {
       if (millis() - m->lockTs[oi] > _PROT_OV_LOCK_MS) {
-        _max14912OutputSet(m, oi, _getBit(m->outputsUser, oi));
+        if (!_getBit(m->thsdLock, oi)) {
+          _max14912OutputSet(m, oi, _getBit(m->outputsUser, oi));
+        }
         _setBit(&m->ovLock, oi, false);
       }
     }
@@ -321,9 +321,7 @@ void IonoD16Class::_max14912OverVoltProt(struct max14912Str* m) {
 
 void IonoD16Class::_max14912ThermalProt(struct max14912Str* m) {
   for (int oi = 0; oi < 8; oi++) {
-    if (_getBit(m->thsdRT, oi) &&
-        (_getBit(m->cfgModePP, oi) || _getBit(m->thsdLock, oi)) &&
-        (!_getBit(m->outputs, oi) || _getBit(m->thsdLock, oi)) ) {
+    if (_getBit(m->thsdRT, oi)) {
       _setBit(&m->thsdLock, oi, true);
       if (_getBit(m->cfgModePP, oi)) {
         _max14912ModePPSet(m, oi, false);
@@ -367,7 +365,7 @@ bool IonoD16Class::_pinModeOutputProtected(int pin, int mode, bool wbol) {
   }
   bool modePP = mode == OUTPUT_PP;
   _setBit(&m->cfgModePPUser, outIdx, modePP);
-  if (_getBit(m->thsdLock, outIdx) && modePP) {
+  if (_getBit(m->ovLock, outIdx) || _getBit(m->thsdLock, outIdx)) {
     return false;
   }
   return _max14912ModePPSet(m, outIdx, modePP);
@@ -381,7 +379,7 @@ bool IonoD16Class::_writeOutputProtected(int pin, int val) {
   }
   val = val == HIGH;
   _setBit(&m->outputsUser, outIdx, val);
-  if (_getBit(m->ovLock, outIdx) && !val) {
+  if (_getBit(m->ovLock, outIdx) || _getBit(m->thsdLock, outIdx)) {
     return false;
   }
   return _max14912OutputSet(m, outIdx, val);
@@ -610,7 +608,7 @@ void IonoD16Class::process() {
       default:
         for (i = 0; i < _MAX14912_NUM; i++) {
           mo = &_max14912[i];
-          _max14912ReadReg(MAX14912_REG_OV, mo, &mo->thsdRT, &mo->thsd);
+          _max14912ReadReg(MAX14912_REG_THSD, mo, &mo->thsdRT, &mo->thsd);
           mo->faultMemThsd |= mo->thsdRT;
           _max14912ThermalProt(mo);
         }
