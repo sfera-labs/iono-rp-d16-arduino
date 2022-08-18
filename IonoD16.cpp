@@ -21,6 +21,7 @@
 #define MAX22190_REG_FAULT1 0x04
 #define MAX22190_REG_FAULT2 0x1C
 #define MAX22190_REG_FLT1 0x06
+#define MAX22190_REG_FAULT2EN 0x1E
 
 #define MAX14912_REG_IN 0
 #define MAX14912_REG_PP 1
@@ -525,6 +526,9 @@ bool IonoD16Class::setup() {
 
   mutex_init(&_spiMtx);
 
+  _max22190WriteReg(MAX22190_REG_FAULT2EN, &_max22190[_MAX22190_IDX_L], 0x3f);
+  _max22190WriteReg(MAX22190_REG_FAULT2EN, &_max22190[_MAX22190_IDX_H], 0x3f);
+
   _ledSet = true;
   _ledVal = false;
 
@@ -800,7 +804,7 @@ int IonoD16Class::thermalShutdownRead(int pin) {
   if (!_max22190GetByPin(pin, &mi, &inIdx)) {
     return -1;
   }
-  ret = (_getBit(mo->faultMemThsd, outIdx) |
+  ret = (_getBit(mo->faultMemThsd, outIdx) ||
           _getBit(mi->faultMemOtshdn, inIdx)) ? HIGH : LOW;
   _setBit(&mo->faultMemThsd, outIdx, false);
   _setBit(&mi->faultMemOtshdn, inIdx, false);
