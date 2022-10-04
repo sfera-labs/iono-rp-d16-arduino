@@ -4,7 +4,7 @@
     Copyright (C) 2022 Sfera Labs S.r.l. - All rights reserved.
 
     For information, see:
-    http://www.sferalabs.cc/
+    https://www.sferalabs.cc/
 
   This code is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
