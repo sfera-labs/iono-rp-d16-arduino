@@ -1,17 +1,17 @@
 /*
  * IonoD16IO.ino - Using I/Os on Iono RP D16
- * 
+ *
  *   Copyright (C) 2022 Sfera Labs S.r.l. - All rights reserved.
- * 
+ *
  *   For information, see:
  *   http://www.sferalabs.cc/
- * 
+ *
  * This code is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  * See file LICENSE.txt for further informations on licensing terms.
- * 
+ *
  */
 
 #include <IonoD16.h>
@@ -33,7 +33,7 @@ void setup() {
 
   // Make sure Iono.setup() is complete
   while (!Iono.ready()) ;
-  
+
   Serial.println("Ready!");
 
   // Setup D1 as push-pull output
@@ -61,6 +61,16 @@ void setup() {
     Serial.println("D6 setup error");
   }
 
+  // Setup D7 as input (required for joining D5-D6 below)
+  if (!Iono.pinMode(D7, INPUT)) {
+    Serial.println("D7 setup error");
+  }
+
+  // Setup D8 as input (required for joining D5-D6 below)
+  if (!Iono.pinMode(D8, INPUT)) {
+    Serial.println("D8 setup error");
+  }
+
   // Join D5 and D6 to be used as single output
   if (!Iono.outputsJoin(D5)) {
     Serial.println("D5/D6 join error");
@@ -76,7 +86,7 @@ void setup() {
     Serial.println("DT2 setup error");
   }
 
-  // Setup D4 as push-pull output 
+  // Setup D4 as push-pull output
   // with 1Hz frequency, 50% duty-cycle PWM
   if (!Iono.pinMode(D4, OUTPUT_PP)) {
     Serial.println("D4 setup error");
