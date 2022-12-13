@@ -110,9 +110,9 @@ Initializes a pin as input or output. To be called before any other operation on
 
 **`mode`**:
 - `INPUT`: use pin as input
-- `OUTPUT`: use pin as input (only for `DT1` ... `DT4`)
 - `OUTPUT_HS`: use pin as high-side output (only for `D1` ... `D16`)
 - `OUTPUT_PP`: use pin as push-pull output (only for `D1` ... `D16`)
+- `OUTPUT`: use pin as output (only for `DT1` ... `DT4`)
 
 **`wbol`**: enable (`true`) or disable (`false`) wire-break (for inputs) or open-load (for high-side outputs) detection (only for `D1` ... `D16`)
 #### Returns
